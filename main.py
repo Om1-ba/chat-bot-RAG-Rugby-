@@ -1,14 +1,17 @@
 import re
 import gradio as gr
+import os
 
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
 
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+
 # Load PDF
 print("Loading document...")
-loader = PyMuPDFLoader("C:/Users/ebam/Desktop/MES_DOSSIERS/UTT/MLOps/Comprendre-le-rugby.pdf")
+loader = PyMuPDFLoader("./Comprendre-le-rugby.pdf")
 documents = loader.load()
 print(f"Loaded {len(documents)} documents.")
 
@@ -20,14 +23,14 @@ print(f"Created {len(chunks)} chunks.")
 
 # Embeddings & LLM
 print("Setting up embeddings and LLM...")
-embedding_function = OllamaEmbeddings(model="nomic-embed-text")
-llm = OllamaLLM(model="deepseek-r1")
+embedding_function = OllamaEmbeddings(model="nomic-embed-text", base_url=OLLAMA_BASE_URL)
+llm = OllamaLLM(model="deepseek-r1", base_url=OLLAMA_BASE_URL)
 
 # Vector store
 vectorstore = Chroma.from_documents(
     documents=chunks,
     embedding=embedding_function,
-    collection_name="foundations_of_llms",
+    collection_name="rugby_RAG",
     persist_directory="./chroma_db"
 )
 print("Vector store created.")
@@ -66,4 +69,4 @@ interface = gr.Interface(
     description="Ask questions about the Comprehensive Guide to Rugby book. Made by Christian and Omar. Powered by DeepSeek-R1."
 )
 print("Launching interface...")
-interface.launch(share=True, inbrowser=True)
+interface.launch(server_name="0.0.0.0", server_port=7860, share=False)
