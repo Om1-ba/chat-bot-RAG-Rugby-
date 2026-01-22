@@ -185,10 +185,7 @@ docker-compose restart rag-app
 
 **URL publique** : [https://rag-rugby.omar.christianmbip.engineer](https://rag-rugby.omar.christianmbip.engineer)
 
-> ⚠️ **Note** : Le tunnel Cloudflare nécessite que le service soit actif en permanence. Si l'URL ne répond pas, relancez le tunnel avec :
-> ```bash
-> cloudflared tunnel run rag-rugby
-> ```
+> ⚠️ **Note** : Le tunnel Cloudflare nécessite que le service soit actif en permanence.
 
 ---
 
