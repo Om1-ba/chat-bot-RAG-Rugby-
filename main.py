@@ -71,14 +71,19 @@ def cached_retrieval(question):
 def ask_question(question):
     context = cached_retrieval(question)
 
-    # Prompt plus concis
-    prompt = f"""Réponds brièvement à la question en utilisant uniquement ce contexte. Si la réponse n'est pas dans le contexte, dis "Je ne sais pas".
+    # Prompt plus souple qui encourage une réponse même sans contexte parfait
+    prompt = f"""Tu es un expert du rugby. Réponds à la question en utilisant principalement le contexte fourni.
 
-Contexte: {context}
+Si le contexte contient des informations pertinentes, utilise-les en priorité.
+Si le contexte est incomplet, complète avec tes connaissances générales sur le rugby.
+Si la question ne concerne pas le rugby, indique-le poliment et propose de répondre à des questions sur le rugby.
+
+Contexte du document:
+{context}
 
 Question: {question}
 
-Réponse:"""
+Réponse claire et concise:"""
 
     response = llm.invoke(prompt)
     
@@ -99,7 +104,7 @@ interface = gr.Interface(
     description="Posez vos questions sur le rugby. Par Christian et Omar | Alimenté par Llama 3.2",
     examples=[
         ["Qu'est-ce que le rugby ?"],
-        ["Combien de joueurs dans une équipe ?"],
+        ["Quelle est la durée d'un match de rugby ?"],
         ["Quelles sont les règles principales ?"]
     ]
 )
