@@ -1,117 +1,198 @@
-# 🏉 RAG Rugby Chatbot (Dockerized)
+# 🏉 RAG Rugby Chatbot
 
-This project is a **Retrieval-Augmented Generation (RAG) chatbot** built with:
+## 📋 Concept de l'application
 
-- **LangChain**
-- **ChromaDB**
-- **Ollama**
-- **DeepSeek-R1**
-- **Gradio**
+Cette application est un chatbot intelligent basé sur la technique **RAG (Retrieval-Augmented Generation)** qui répond à des questions sur les règles du rugby en français. 
 
-It allows you to ask questions about the book **“Comprendre le Rugby”** using a local LLM.
+### Fonctionnement
+1. **Ingestion** : Le document PDF "regles-du-rugby.pdf" (216 pages) est chargé et divisé en chunks de 1000 caractères
+2. **Vectorisation** : Chaque chunk est transformé en embeddings avec le modèle `nomic-embed-text`
+3. **Stockage** : Les embeddings sont stockés dans une base vectorielle Chroma persistante
+4. **Recherche** : Lorsqu'une question est posée, les 3 chunks les plus pertinents sont récupérés
+5. **Génération** : Le modèle `Llama 3.2` génère une réponse concise basée sur le contexte récupéré
 
-The project is fully **Dockerized**, so it can run on **any computer** without installing Python or dependencies manually.
+### Caractéristiques
+- ✅ Réponses précises basées uniquement sur le document source
+- ✅ Interface web intuitive avec Gradio
+- ✅ Cache LRU pour optimiser les questions répétées
+- ✅ Nettoyage automatique des balises XML dans les réponses
+- ✅ Déploiement avec Docker et tunnel Cloudflare
 
 ---
 
-## 📁 Project Structure
+## 🚀 Installation et exécution en local
 
+### Prérequis
+- Docker et Docker Compose installés
+- 8 GB de RAM minimum (recommandé : 16 GB)
+- Connexion internet pour télécharger les modèles
 
----
+### Étapes d'installation
 
-## ⚙️ Requirements
-
-You only need:
-
-- **Docker**
-- **Docker Compose**
-
-### Check installation
-
+#### 1. Cloner le projet
 ```bash
-docker --version
-docker-compose --version
+git clone https://github.com/Om1-ba/chat-bot-RAG-Rugby-.git
+cd chat-bot-RAG-Rugby-
+```
 
-🚀 How to Launch the Project
-1️⃣ Clone the repository
+#### 2. Structure des fichiers
+Assurez-vous d'avoir cette structure :
+```
+.
+├── docker-compose.yml
+├── Dockerfile
+├── main.py
+├── requirements.txt
+├── regles-du-rugby.pdf
+```
 
-git clone <your-repository-url>
-cd rag-rugby
+#### 3. Lancer les conteneurs Docker
+```bash
+docker-compose up -d
+```
 
-2️⃣ Build and start all services
-docker-compose up --build
-This will start:
+#### 4. Télécharger les modèles Ollama
+**⚠️ IMPORTANT** : Téléchargez les modèles avant de lancer l'application
+```bash
+# Télécharger Llama 3.2 (~2 GB) - peut prendre 5-10 minutes
+docker exec -it ollama ollama pull llama3.2
 
-Ollama (LLM server)
-
-The RAG + Gradio application
-
-ChromaDB (persistent vector store)
-3️⃣ Download required models (first run only)
-
-Open a new terminal and run:
-
-docker exec -it ollama ollama pull deepseek-r1
+# Télécharger nomic-embed-text (~274 MB) - environ 1-2 minutes
 docker exec -it ollama ollama pull nomic-embed-text
-The models are stored in a Docker volume and will not be downloaded again.
+```
 
-4️⃣ Open the application
-Once everything is running, open your browser:
-http://localhost:7860
+**Vérifier que les modèles sont installés :**
+```bash
+docker exec -it ollama ollama list
+```
 
-You can now ask questions about the rugby book.
+Vous devriez voir :
+```
+NAME                    ID              SIZE
+llama3.2:latest         a80c4f17acd5    2.0 GB
+nomic-embed-text:latest 0a109f422b47    274 MB
+```
 
-💾 Data Persistence
+#### 5. Redémarrer l'application RAG
+```bash
+docker-compose restart rag-app
+```
 
-The following data is persisted automatically using Docker volumes:
+#### 6. Accéder à l'interface
+Ouvrez votre navigateur : **http://localhost:7860**
 
-Ollama models
+### Commandes utiles
+```bash
+# Voir les logs en temps réel
+docker-compose logs -f rag-app
 
-Chroma vector database
+# Vérifier l'état des conteneurs
+docker-compose ps
 
-Stopping or restarting containers will not delete embeddings or models.
+# Redémarrer uniquement le chatbot
+docker-compose restart rag-app
 
-🛑 Stop the Project
-
-To stop all services:
-
+# Arrêter tous les conteneurs
 docker-compose down
 
-
-To stop and remove volumes (⚠️ deletes models and embeddings):
-
+# Supprimer les volumes (réinitialiser la base vectorielle)
 docker-compose down -v
 
-🧠 Technologies Used
+# Accéder au shell du conteneur Ollama
+docker exec -it ollama bash
+```
 
-Python 3.11
+---
 
-LangChain
+## 🛠️ Choix techniques
 
-ChromaDB
+### Architecture
+- **Docker Compose** : Orchestration de deux services (Ollama + Application)
+- **Volumes persistants** : 
+  - `ollama_data` : Stocke les modèles téléchargés
+  - `chroma_data` : Conserve la base vectorielle entre les redémarrages
 
-Ollama
+### Stack technique
+| Composant | Technologie | Justification |
+|-----------|-------------|---------------|
+| **LLM** | Llama 3.2 | Modèle léger (2GB) avec bon équilibre qualité/rapidité |
+| **Embeddings** | nomic-embed-text | Optimisé pour la recherche sémantique |
+| **Vector DB** | ChromaDB | Léger, simple, avec persistance locale |
+| **Framework** | LangChain | Abstraction RAG et intégration Ollama |
+| **Interface** | Gradio | Déploiement rapide d'UI avec partage public |
+| **PDF Parser** | PyMuPDF | Extraction de texte robuste |
+| **Tunnel** | Cloudflare Argo | Exposition sécurisée sans configuration réseau |
 
-DeepSeek-R1
+### Optimisations implémentées
+1. **Cache LRU** (`@lru_cache`) : Évite de recalculer les réponses identiques
+2. **Réduction du contexte** : 3 chunks au lieu de 4 (balance pertinence/vitesse)
+3. **Température basse** (0.1) : Réponses plus déterministes et rapides
+4. **Persistance Chroma** : La vectorisation ne se fait qu'une seule fois
 
-Gradio
+---
 
-Docker & Docker Compose
+## ⚠️ Limitations et améliorations possibles
 
-📌 Notes
+### Limitations actuelles
+1. **Langue** : Uniquement le français (lié au PDF source)
+2. **Monodocument** : L'application ne traite qu'un seul PDF
+3. **Pas de streaming** : Les réponses apparaissent d'un coup (Gradio ne supporte pas le streaming Ollama nativement)
+4. **Ressources** : Nécessite un serveur avec GPU pour de meilleures performances (actuellement CPU)
+5. **Pas de mémoire conversationnelle** : Chaque question est traitée indépendamment
 
-The PDF file must remain inside the app/ folder.
+### Améliorations possibles
+- [ ] Ajouter un système de conversation multi-tours avec historique
+- [ ] Supporter le téléversement de PDFs personnalisés
+- [ ] Implémenter un système de feedback utilisateur (👍/👎)
+- [ ] Ajouter des métadonnées (numéros de page) dans les réponses
+- [ ] Migrer vers un modèle avec GPU (ex: via Modal, Runpod)
+- [ ] Interface multilingue avec traduction automatique
+- [ ] Ajout de graphiques de similarité des chunks récupérés
 
-First startup may be slow due to model downloads.
+---
 
-Works on Windows, macOS, and Linux.
+## 🔧 Dépannage
 
-👥 Authors
+### Problème : "Connection refused" lors du lancement
+**Solution** : Vérifiez que les modèles sont téléchargés
+```bash
+docker exec -it ollama ollama list
+```
 
-Christian
+### Problème : L'application ne trouve pas les modèles
+**Solution** : Redémarrez le conteneur après téléchargement
+```bash
+docker-compose restart rag-app
+```
 
-Omar
+### Problème : Réponses très lentes
+**Causes possibles** :
+- CPU uniquement (pas de GPU)
+- RAM insuffisante
+- Modèle trop lourd
 
-📄 License
+**Solution** : Réduire `chunk_size` ou utiliser un modèle plus petit
 
-This project is for educational and academic use.
+---
+
+## 🌐 Application déployée
+
+**URL publique** : [https://rag-rugby.christianmbip.engineer](https://rag-rugby.christianmbip.engineer)
+
+> ⚠️ **Note** : Le tunnel Cloudflare nécessite que le service soit actif en permanence. Si l'URL ne répond pas, relancez le tunnel avec :
+> ```bash
+> cloudflared tunnel run rag-rugby
+> ```
+
+---
+
+## 👥 Auteurs
+
+**Christian & Omar** | Projet RAG - Guide du Rugby  
+Alimenté par Llama 3.2 et Ollama
+
+---
+
+## 📄 Licence
+
+Ce projet est à usage éducatif. Le document "regles-du-rugby.pdf" appartient à ses auteurs respectifs.

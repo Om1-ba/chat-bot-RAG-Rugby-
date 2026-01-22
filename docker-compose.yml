@@ -6,7 +6,7 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-    restart: unless-stopped
+    restart: always
 
   rag-app:
     build: .
@@ -19,7 +19,7 @@ services:
       - OLLAMA_BASE_URL=http://ollama:11434
     volumes:
       - chroma_data:/app/chroma_db
-    restart: unless-stopped
+    restart: always
 
 volumes:
   ollama_data:
