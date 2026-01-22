@@ -2,6 +2,7 @@
 
 ## 🌐 Application déployée 
 (via Cloudflared : mon pc doit donc etre allumé au moment ou vous accédez à l'appli, sinon ça ne marchera pas)
+
 **URL publique** : [https://rag-rugby.omar.christianmbip.engineer](https://rag-rugby.omar.christianmbip.engineer)
 
 ## 📋 Concept de l'application
