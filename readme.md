@@ -1,5 +1,8 @@
 # 🏉 RAG Rugby Chatbot
 
+## 🌐 Application déployée
+**URL publique** : [https://rag-rugby.christianmbip.engineer](https://rag-rugby.christianmbip.engineer)
+
 ## 📋 Concept de l'application
 
 Cette application est un chatbot intelligent basé sur la technique **RAG (Retrieval-Augmented Generation)** qui répond à des questions sur les règles du rugby en français. 
