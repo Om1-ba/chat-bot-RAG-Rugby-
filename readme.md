@@ -1,7 +1,7 @@
 # 🏉 RAG Rugby Chatbot
 
 ## 🌐 Application déployée
-**URL publique** : [https://rag-rugby.christianmbip.engineer](https://rag-rugby.christianmbip.engineer)
+**URL publique** : [https://rag-rugby.omar.christianmbip.engineer](https://rag-rugby.omar.christianmbip.engineer)
 
 ## 📋 Concept de l'application
 
@@ -180,7 +180,7 @@ docker-compose restart rag-app
 
 ## 🌐 Application déployée
 
-**URL publique** : [https://rag-rugby.christianmbip.engineer](https://rag-rugby.christianmbip.engineer)
+**URL publique** : [https://rag-rugby.omar.christianmbip.engineer](https://rag-rugby.omar.christianmbip.engineer)
 
 > ⚠️ **Note** : Le tunnel Cloudflare nécessite que le service soit actif en permanence. Si l'URL ne répond pas, relancez le tunnel avec :
 > ```bash
