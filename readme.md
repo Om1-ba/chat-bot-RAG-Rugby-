@@ -3,7 +3,7 @@
 ## 🌐 Application déployée 
 (via Cloudflared : mon pc doit donc etre allumé au moment ou vous accédez à l'appli, sinon ça ne marchera pas)
 
-**URL publique** : [https://rag-rugby.omar.christianmbip.engineer](https://rag-rugby.omar.christianmbip.engineer)
+**URL publique** : [https://ragrugby-omar.christianmbip.engineer](https://ragrugby-omar.christianmbip.engineer)
 
 ## 📋 Concept de l'application
 
@@ -183,7 +183,7 @@ docker-compose restart rag-app
 ## 🌐 Application déployée
 (via Cloudflared : mon pc doit donc etre allumé au moment ou vous accédez à l'appli, sinon ça ne marchera pas)
 
-**URL publique** : [https://rag-rugby.omar.christianmbip.engineer](https://rag-rugby.omar.christianmbip.engineer)
+**URL publique** : [https://ragrugby-omar.christianmbip.engineer](https://ragrugby-omar.christianmbip.engineer)
 
 > ⚠️ **Note** : Le tunnel Cloudflare nécessite que le service soit actif en permanence.
 
